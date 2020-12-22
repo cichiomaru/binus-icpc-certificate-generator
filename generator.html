@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ICPC Certificate Generator</title>
+    <script src="jquery-3.4.1.min.js"></script>
+    <style>
+        #root {
+            margin: 0px;
+        }
+        .page {
+            width: 296mm;
+            height: 209mm;
+            background: url('background.png');
+            background-repeat: no-repeat;
+            font-family: Arial, Helvetica, sans-serif;
+            text-align: center;
+            background-size: 100%;
+            page-break-after: always;
+            overflow: auto;
+            margin: 0px;
+        }
+        .header {
+            font-size: 36pt;
+            padding-top: 3.8cm;
+        }
+        .emphasize {
+            margin-top: 0.5cm;
+            font-size: 30pt;
+        }
+        .filler {
+            font-size: 16pt;
+            margin-top: 0.5cm;
+        }
+        .title {
+            font-size: 24pt;
+            margin-top: 0.5cm;
+        }
+        .binus {
+            font-size: 20pt;
+            margin-top: 0.5cm;
+        }
+        .footer {
+            margin-top: 1cm;
+            display: grid;
+            grid-template-columns: 200mm 97mm;
+        }
+        .sponsor {
+            background-image: url('sponsor.png');
+            background-size: 200mm;
+            background-repeat: no-repeat;
+            width: 200mm;
+        }
+        .ttd {            
+            height: 6cm;
+            width: 8cm;
+        }
+    </style>
+</head>
+<body id="root">
+    <input type="file" id="file" placeholder="Select File" onchange="handleFile(this.files)">
+
+<script>
+    class Page {
+        constructor (name, role) {
+            this.name = name;
+            this.role = role;
+        }
+        getPage () {
+            let pageOpen = '<div class="page">';
+            let content = 
+            '<div class="header">Certificate of Achievement</div>'+
+            '<div class="emphasize">'+this.name+'</div>'+
+            '<div class="filler">has successfully completed the</div>'+
+            '<div class="title">The 2020 ICPC Asia Jakarta Regional Contest</div>'+
+            '<div class="binus">Hosted by BINUS University</div>'+
+            '<div class="filler">as</div>'+
+            '<div class="emphasize">'+this.role+'</div>'+
+            '<div class="footer">'+
+                '<div class="sponsor"></div>'+
+                '<div class="ttd">'+
+                    '<b>Bina Nusantara University</b>'+
+                    '<br>20 December 2020'+
+                    '<br><br><br><br><br><br><br><br>'+
+                    '<u>Dr. Fredy Purnomo, S.Kom., M.Kom.</u><br>'+
+                    '<span style="font-size: 10pt;"><i>Dean of School of Computer Science</i></span> '+
+                '</div>'+
+            '</div>';
+            let pageClose = '</div>';
+            return pageOpen + content + pageClose;
+        }
+    }
+
+    let pages = [];    
+    
+    function handleFile(files) {
+        let reader = new FileReader();
+        reader.readAsText(files[0]);
+        reader.onload = loadHandler;
+    }
+    function loadHandler(event) {
+        let csv = event.target.result;
+        generateFromFile(csv);
+        drawPages();
+    }
+    function generateFromFile (csv) {
+        document.getElementById('root').innerHTML = '';
+        let lines = csv.split ('\n');
+        lines.shift ();
+        lines.pop ();
+
+        lines.forEach(element => {
+            element.trim ();
+            let cell = element.split(',');
+            pages.push (new Page (cell[0], cell[3]));
+        });
+    }
+    function drawPages () {
+        //let doc = new jspdf
+        pages.forEach(element => {
+            document.getElementById ('root').innerHTML += element.getPage();
+        });
+    }
+</script>
+</body>
+</html>
